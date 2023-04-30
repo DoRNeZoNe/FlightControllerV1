@@ -12,8 +12,12 @@
 // MPU Important Addresses
 #define IMU_I2C_ADDRESS 0xD0
 
+// AK8963 Address
+#define AK8963_I2C_ADDR  		(0x0C << 1)
+
 // Mathematical Variables
 #define DZ_PI 3.14159265358979323846
+#define DEG_TO_RAD 0.0174533
 
 // To configure acc and gyro
 enum accScale {
@@ -28,6 +32,11 @@ enum gyroScale {
   GFS_500DPS,
   GFS_1000DPS,
   GFS_2000DPS
+};
+
+enum magScale {
+  MAG_16_BIT = 0,
+  MAG_14_BIT
 };
 
 enum timerChannels {

@@ -28,6 +28,7 @@ uint32_t tickStart = HAL_GetTick();
 // Init variables
 uint8_t wakeUpImuByte = 0x00;
 uint8_t dataRateByte = 0x07; // 1Khz
+uint8_t bypasEnable = 0x02;
 
 // Data Structure to save the data
 
@@ -80,6 +81,9 @@ public:
 IMU_DATA_t *imuDataStore;
 
 private:
+
+	HAL_StatusTypeDef isImuConnected();
+
 	void setAccResolution(uint8_t aScale);
 	void setGyroResolution(uint8_t gScale);
 

@@ -20,7 +20,8 @@
 #define AK8975A_ZOUT_L   0x07
 #define AK8975A_ZOUT_H   0x08
 #define AK8975A_ST2      0x09  // Data overflow bit 3 and data read error status bit 2
-#define AK8975A_CNTL     0x0A  // Power down (0000), single-measurement (0001), self-test (1000) and Fuse ROM (1111) modes on bits 3:0
+#define AK8975A_CNTL_1   0x0A  // Power down (0000), single-measurement (0001), self-test (1000) and Fuse ROM (1111) modes on bits 3:0
+#define AK8975A_CNTL_2   0x0B
 #define AK8975A_ASTC     0x0C  // Self test control
 #define AK8975A_ASAX     0x10  // Fuse ROM x-axis sensitivity adjustment value
 #define AK8975A_ASAY     0x11  // Fuse ROM y-axis sensitivity adjustment value

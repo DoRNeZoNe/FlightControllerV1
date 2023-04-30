@@ -10,6 +10,7 @@
 dzImu::dzImu(dzI2c* i2cObject, accScale accResolution, gyroScale gyroResolution, dzLogger* logger) {
 
 	this->i2cObj = i2cObject;
+
 	if(logger){
 		this->loggerObj = logger;
 	}
@@ -21,19 +22,16 @@ dzImu::dzImu(dzI2c* i2cObject, accScale accResolution, gyroScale gyroResolution,
 	this->setGyroResolution(gyroResolution);
 
 	this->init();
+	this->getAccBias();
+	this->getGyroBias();
 
 }
 
 HAL_StatusTypeDef dzImu::init() {
 
-	uint8_t check;
+	this->dzLog((char*)"\r\n******* INITIALISING IMU *******\r\n");
 
-	i2cObj->read(WHO_AM_I_MPU9150, &check, 1);
-	if (check == 0x68){
-		this->dzLog((char*)"\r\nsuccessfully detected****\r\n");
-	}
-	else {
-		this->dzLog((char*)"\r\nNot detected****\r\n");
+	if(this->isImuConnected() == HAL_ERROR){
 		return HAL_ERROR;
 	}
 
@@ -49,7 +47,11 @@ HAL_StatusTypeDef dzImu::init() {
     // Set Gyroscopic configuration in GYRO_CONFIG Register
 	i2cObj->write(GYRO_CONFIG, &imuGyroScale, sizeof(imuGyroScale));
 
-	this->dzLog((char*)"Successfully Initialized****\r\n");
+	//Enable by-pass
+	i2cObj->write(INT_PIN_CFG, &bypasEnable, sizeof(bypasEnable));
+	HAL_Delay(100);
+
+	this->dzLog((char*)"IMU Successfully Initialized****\r\n");
 
 	return HAL_OK;
 
@@ -83,17 +85,16 @@ HAL_StatusTypeDef dzImu::readRawGyroData(){
 }
 
 HAL_StatusTypeDef dzImu::processAccData(){
-	this->imuDataStore->Ax = (this->imuDataStore->Accel_X_RAW * this->accResolution) - this->imuDataStore->AxBias;
-	this->imuDataStore->Ay = (this->imuDataStore->Accel_Y_RAW * this->accResolution) - this->imuDataStore->AyBias;
-	this->imuDataStore->Az = (this->imuDataStore->Accel_Z_RAW * this->accResolution) - this->imuDataStore->AzBias;
+	this->imuDataStore->Ax = (this->imuDataStore->Accel_X_RAW * this->accResolution);// - this->imuDataStore->AxBias;
+	this->imuDataStore->Ay = (this->imuDataStore->Accel_Y_RAW * this->accResolution);// - this->imuDataStore->AyBias;
+	this->imuDataStore->Az = (this->imuDataStore->Accel_Z_RAW * this->accResolution);// - this->imuDataStore->AzBias;
 	return HAL_OK;
 }
 
-
 HAL_StatusTypeDef dzImu::processGyroData(){
-	this->imuDataStore->Gx = (this->imuDataStore->Gyro_X_RAW * this->gyroResolution) - this->imuDataStore->GxBias;
-	this->imuDataStore->Gy = (this->imuDataStore->Gyro_Y_RAW * this->gyroResolution) - this->imuDataStore->GyBias;
-	this->imuDataStore->Gz = (this->imuDataStore->Gyro_Z_RAW * this->gyroResolution) - this->imuDataStore->GzBias;
+	this->imuDataStore->Gx = (this->imuDataStore->Gyro_X_RAW * this->gyroResolution);// - this->imuDataStore->GxBias;
+	this->imuDataStore->Gy = (this->imuDataStore->Gyro_Y_RAW * this->gyroResolution);// - this->imuDataStore->GyBias;
+	this->imuDataStore->Gz = (this->imuDataStore->Gyro_Z_RAW * this->gyroResolution);// - this->imuDataStore->GzBias;
 	return HAL_OK;
 }
 
@@ -189,6 +190,23 @@ void dzImu::dzLog(char *msg){
 
 // Private Functions
 
+HAL_StatusTypeDef dzImu::isImuConnected(){
+	uint8_t check;
+	i2cObj->read(WHO_AM_I_MPU9150, &check, 1);
+	if (check == 115){
+		this->dzLog((char*)"IMU successfully detected****\r\n");
+		return HAL_OK;
+	}
+	else {
+		this->dzLog((char*)"IMU Not detected****\r\n");
+		return HAL_ERROR;
+	}
+
+//	char data[50];
+//	sprintf(data, "%d", check);
+//	loggerObj->logViaUart(data);
+}
+
 void dzImu::setGyroResolution(uint8_t gScale) {
 	float gyroRes;
 	switch (gScale)
@@ -244,5 +262,3 @@ void dzImu::setAccResolution(uint8_t aScale) {
 	// Config Regsiter OffSet for scale = 3
 	this->imuAccScale = (uint8_t)aScale << 3;
 }
-
-
