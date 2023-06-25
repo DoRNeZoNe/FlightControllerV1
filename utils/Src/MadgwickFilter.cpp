@@ -38,9 +38,6 @@ void MadgwickFilter::updateRollPitchYaw(float accX, float accY, float accZ, floa
     this->mz = magZ;
     MadgwickQuaternionUpdate();
     quaternionToRollPitchYaw();
-    char stringData[50];
-    sprintf(stringData, "X => %f | Y => %f | Z => %f\r\n", roll, pitch, yaw);
-    this->logger->logViaUart(stringData);
 }
 
 // Implementation of Sebastian Madgwick's "...efficient orientation filter for... inertial/magnetic sensor arrays"

@@ -16,7 +16,7 @@ dzPwm::dzPwm(TIM_HandleTypeDef *htim, timerChannels channel)
 	this->ARR = this->timerHandle->Instance->ARR;
 	this->prescaler = this->timerHandle->Instance->PSC;
 
-	this->setCcrRegister();
+	this->setCcrRegister(channel);
 
 	HAL_TIM_PWM_Start(htim, this->channel);
 }
@@ -31,7 +31,7 @@ void dzPwm::generateWave(uint16_t pulseInUs)
 uint32_t dzPwm::getTimerChannel(timerChannels channel)
 {
 
-	switch ((uint8_t)this->channel)
+	switch (channel)
 	{
 	case TIM_CH1:
 		return TIM_CHANNEL_1;
@@ -45,9 +45,9 @@ uint32_t dzPwm::getTimerChannel(timerChannels channel)
 	return 0xff;
 }
 
-void dzPwm::setCcrRegister()
+void dzPwm::setCcrRegister(timerChannels channel)
 {
-	switch ((uint8_t)this->channel)
+	switch (channel)
 	{
 	case TIM_CH1:
 		this->ccrRegister = &this->timerHandle->Instance->CCR1;

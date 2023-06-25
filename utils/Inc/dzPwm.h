@@ -30,12 +30,12 @@ private:
 public:
 
 	TIM_HandleTypeDef* timerHandle;
-	timerChannels channel;
+	uint32_t channel;
 
 	dzPwm(TIM_HandleTypeDef* htim, timerChannels channel);
 	void generateWave(uint16_t pulseInUs);
-	void setCcrRegister();
-	uint32_t getTimerChannel();
+	void setCcrRegister(timerChannels channel);
+	uint32_t getTimerChannel(timerChannels channel);
 	uint16_t calculatePulseForCCRx(uint16_t pulseInUs);
 
 };
